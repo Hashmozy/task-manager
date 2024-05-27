@@ -19,9 +19,20 @@ class ProjectController extends Controller
         //     'projects' => Project::all(),
         // ]);
         $query = Project::query();
-        $projects = $query->paginate(10)->onEachSide(2);
+
+        if (request('name')) {
+            $query->where('name', 'like', '%'. request('name'). '%');
+        }
+
+        if (request('status')) {
+            $query->where('status', request('status'));
+        }
+
+        $projects = $query->paginate(10);
+
         return Inertia('Project/Index', [
             'projects' => ProjectResource::collection($projects),
+            'queryParams' => request()->query(),
         ]);
     }
 
